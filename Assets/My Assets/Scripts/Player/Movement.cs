@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -17,32 +16,17 @@ public class Movement : MonoBehaviour
 
     [Space]
 
-    [Header("Respawning")]
-    [SerializeField] float respawnDelay;
-    [SerializeField] Transform respawnPoint;
-    [SerializeField] GameObject deathEffect;
-    BoxCollider col;
-    bool dead;
-
-    [Space]
-
     [Header("Sounds")]
     [SerializeField] UnityEvent[] sounds;
 
     void Start()
     {
-        col = GetComponent<BoxCollider>();
         ls = lerpSpeed;
         stamina = sprintStamina;
     }
 
     void Update()
     {
-        if (dead)
-        {
-            return;
-        }
-
         // Movement
         moveX = Input.GetAxisRaw("Horizontal");
         moveZ = Input.GetAxisRaw("Vertical");
@@ -73,11 +57,6 @@ public class Movement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (dead)
-        {
-            return;
-        }
-
         // Sprinting
         if (canSprint)
         {
@@ -88,18 +67,5 @@ public class Movement : MonoBehaviour
         {
             stamina += Time.deltaTime;
         }
-    }
-
-    IEnumerator DieAndRespawn()
-    {
-        dead = true;
-        sounds[1].Invoke();
-        col.enabled = false;
-        GameObject effect = Instantiate(deathEffect, transform.position, Quaternion.Euler(-90, 0, 0));
-        yield return new WaitForSeconds(respawnDelay);
-        Destroy(effect, 1.1f);
-        transform.position = respawnPoint.position;
-        col.enabled = true; 
-        dead = false;
     }
 }

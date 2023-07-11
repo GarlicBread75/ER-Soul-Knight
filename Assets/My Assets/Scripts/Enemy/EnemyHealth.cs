@@ -1,25 +1,35 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class EnemyHealth : MonoBehaviour
 {
     [SerializeField] int maxHp, currentHp;
-    [SerializeField] Slider slider;
+    [SerializeField] GameObject[] deathEffects;
+    [SerializeField] GameObject hitEffect;
 
     void Start()
     {
         currentHp = maxHp;
-        //slider.maxValue = maxHp;
-        //slider.value = currentHp;
     }
 
     void FixedUpdate()
     {
-        //slider.value = currentHp;
-
         if (currentHp <= 0)
         {
             Die();
+        }
+    }
+
+    void OnTriggerEnter(Collider trigger)
+    {
+        if (trigger.gameObject.CompareTag("Sword"))
+        {
+            TakeDmg(1);
+
+            if (currentHp > 1)
+            {
+                GameObject effect = Instantiate(hitEffect, transform.position, Quaternion.identity);
+                Destroy(effect, 0.5f);
+            }
         }
     }
 
@@ -47,6 +57,8 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
+        GameObject effect = Instantiate(deathEffects[Random.Range(0, deathEffects.Length)], transform.position, Quaternion.identity);
+        Destroy(effect, 0.5f);
         Destroy(gameObject);
     }
 }

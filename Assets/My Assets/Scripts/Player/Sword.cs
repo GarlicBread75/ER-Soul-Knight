@@ -3,29 +3,34 @@ using UnityEngine;
 public class Sword : MonoBehaviour
 {
     Animator swordAttack;
+    BoxCollider col;
 
     void Start()
     {
         swordAttack = GetComponent<Animator>();
+        col = GetComponent<BoxCollider>();
     }
 
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            AttackStart();
+            swordAttack.SetBool("Attack", true);
         }
     }
 
     public void AttackEnd()
     {
-        gameObject.tag = "Untagged";
         swordAttack.SetBool("Attack", false);
     }
 
-    public void AttackStart()
+    public void EnableCollider()
     {
-        gameObject.tag = "Sword";
-        swordAttack.SetBool("Attack", true);
+        col.enabled = true;
+    }
+
+    public void DisableCollider()
+    {
+        col.enabled = false;
     }
 }
