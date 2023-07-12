@@ -6,27 +6,46 @@ using UnityEngine.UI;
 public class Health : MonoBehaviour
 {
     [Header("Health")]
-    [SerializeField] int maxHp, currentHp;
-    [SerializeField] GameObject deathEffect;
-    [SerializeField] GameObject hitEffect;
+    [SerializeField] int maxHp;
+    [SerializeField] int currentHp;
     //[SerializeField] Slider slider;
+
+    [Space]
+
+    [Header("Invulnerability")]
+    [SerializeField] float invulnerableDuration;
+    [SerializeField] int numberOfFlashes;
+    [SerializeField] Material flashColor1;
+    [SerializeField] Material flashColor2;
+
 
     [Space]
 
     [Header("Respawning")]
     [SerializeField] float respawnDelay;
     [SerializeField] Transform respawnPoint;
-    BoxCollider col;
 
     [Space]
 
     [Header("Sounds")]
     [SerializeField] UnityEvent[] sounds;
 
+    // Misc
+    [SerializeField] Transform target;
+    [SerializeField] Vector3 knockback;
+    Vector3 direction;
+    BoxCollider col;
+    Rigidbody rb;
+    MeshRenderer rend;
+    Material originalMaterial;
+
     void Start()
     {
+        rb = GetComponent<Rigidbody>();
         col = GetComponent<BoxCollider>();
+        rend = GetComponent<MeshRenderer>();
         currentHp = maxHp;
+        originalMaterial = rend.material;
         //slider.maxValue = maxHp;
         //slider.value = currentHp;
     }
@@ -39,15 +58,16 @@ public class Health : MonoBehaviour
         {
             StartCoroutine(Respawn());
         }
+
+        direction.x = transform.position.x - target.position.x;
+        direction.z = transform.position.z - target.position.z;
     }
 
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            GameObject effect = Instantiate(hitEffect, transform.position, Quaternion.identity);
-            Destroy(effect, 0.5f);
-            TakeDmg(1);
+            StartCoroutine(Hit());
         }
     }
 
@@ -75,20 +95,39 @@ public class Health : MonoBehaviour
 
     void Die()
     {
-        sounds[1].Invoke();
-        GameObject effect = Instantiate(deathEffect, transform.position, Quaternion.identity);
-        Destroy(effect, 2);
         gameObject.SetActive(false);
     }
 
     IEnumerator Respawn()
     {
-        sounds[1].Invoke();
-        GameObject effect = Instantiate(deathEffect, transform.position, Quaternion.identity);
-        Destroy(effect, 1);
-        //gameObject.SetActive(false);
-         yield return new WaitForSeconds(respawnDelay);
-        transform.position = respawnPoint.position;
-        //gameObject.SetActive(true);
+        Die();
+        yield return new WaitForSeconds(respawnDelay);
+    }
+
+    IEnumerator Hit()
+    {
+        gameObject.layer = 11;
+        rb.velocity = new Vector3(knockback.x * direction.x, knockback.y, knockback.z * direction.z);
+        TakeDmg(1);
+        StartCoroutine(InvulnerabilityFlash());
+        yield return new WaitForSeconds(invulnerableDuration);
+        gameObject.layer = 6;
+    }
+
+    IEnumerator InvulnerabilityFlash()
+    {
+        for (int i = 0; i <= numberOfFlashes; i++)
+        {
+            if (i % 2 == 0)
+            {
+                rend.material = flashColor1;
+            }
+            else
+            {
+                rend.material = flashColor2;
+            }
+            yield return new WaitForSeconds(invulnerableDuration/numberOfFlashes);
+        }
+        rend.material = originalMaterial;
     }
 }

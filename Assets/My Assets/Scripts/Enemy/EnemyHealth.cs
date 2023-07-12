@@ -1,13 +1,18 @@
+using System.Collections;
 using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
     [SerializeField] int maxHp, currentHp;
-    [SerializeField] GameObject[] deathEffects;
-    [SerializeField] GameObject hitEffect;
+    [SerializeField] Material flickerMat;
+    [SerializeField] float flickerDuration;
+    MeshRenderer rend;
+    Material originalMaterial;
 
     void Start()
     {
+        rend = GetComponent<MeshRenderer>();
+        originalMaterial = rend.material;
         currentHp = maxHp;
     }
 
@@ -23,13 +28,7 @@ public class EnemyHealth : MonoBehaviour
     {
         if (trigger.gameObject.CompareTag("Sword"))
         {
-            TakeDmg(1);
-
-            if (currentHp > 1)
-            {
-                GameObject effect = Instantiate(hitEffect, transform.position, Quaternion.identity);
-                Destroy(effect, 0.5f);
-            }
+            StartCoroutine(Hit());
         }
     }
 
@@ -57,8 +56,14 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
-        GameObject effect = Instantiate(deathEffects[Random.Range(0, deathEffects.Length)], transform.position, Quaternion.identity);
-        Destroy(effect, 0.5f);
         Destroy(gameObject);
+    }
+
+    IEnumerator Hit()
+    {
+        TakeDmg(1);
+        rend.material = flickerMat;
+        yield return new WaitForSeconds(flickerDuration);
+        rend.material = originalMaterial;
     }
 }
