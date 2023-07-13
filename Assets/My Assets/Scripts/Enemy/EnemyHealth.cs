@@ -1,11 +1,13 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class EnemyHealth : MonoBehaviour
 {
     [SerializeField] int maxHp, currentHp;
     [SerializeField] Material flickerMat;
     [SerializeField] float flickerDuration;
+    [SerializeField] UnityEvent thingy;
     MeshRenderer rend;
     Material originalMaterial;
 
@@ -56,6 +58,7 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
+        thingy.Invoke();
         Destroy(gameObject);
     }
 

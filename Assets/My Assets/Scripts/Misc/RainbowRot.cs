@@ -1,4 +1,4 @@
-using UnityEngine;
+    using UnityEngine;
 
 public class RainbowRot : MonoBehaviour
 {
@@ -14,21 +14,27 @@ public class RainbowRot : MonoBehaviour
 
     [SerializeField] float rotModifier;
     [SerializeField] bool canRot;
+
+    [Space]
+
     [SerializeField] bool canRotX;
+    [SerializeField] float rotX;
+
+    [Space]
+
     [SerializeField] bool canRotY;
+    [SerializeField] float rotY;
+
+    [Space]
+    
     [SerializeField] bool canRotZ;
-    float rotX;
-    float rotY;
-    float rotZ;
+    [SerializeField] float rotZ;
+    Vector3 rot;
 
     void Start()
     {
         rend = GetComponent<Renderer>();
-        rotX = transform.rotation.x;
-        rotY = transform.rotation.y; 
-        rotZ = transform.rotation.z;
         hue /= 255;
-        //colour = rend.material.GetColor("_BaseColor");
     }
 
     void Update()
@@ -44,7 +50,7 @@ public class RainbowRot : MonoBehaviour
                 hue += Time.deltaTime / hueModifier;
             }
 
-            colour = Color.HSVToRGB(hue, 1, 0.7f);
+            colour = Color.HSVToRGB(hue, 1, 1);
             rend.material.SetColor("_BaseColor", colour);
         }
 
@@ -86,7 +92,8 @@ public class RainbowRot : MonoBehaviour
                 }
             }
 
-            transform.rotation = Quaternion.Euler(rotX, rotY, rotZ);
+            rot = new Vector3(rotX, rotY, rotZ);
+            transform.rotation = Quaternion.Euler(rot);
         }
     }
 }
