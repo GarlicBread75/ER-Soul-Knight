@@ -1,15 +1,16 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class EnemyCounter : MonoBehaviour
 {
     [SerializeField] int enemyCount;
-    [SerializeField] GameObject signetsMenu;
+    [SerializeField] UnityEvent onNoEnemiesLeft;
 
     private void FixedUpdate()
     {
-        if (enemyCount == 0)
+        if (enemyCount <= 0)
         {
-            signetsMenu.SetActive(true);
+            onNoEnemiesLeft.Invoke();
             Destroy(gameObject);
         }
     }

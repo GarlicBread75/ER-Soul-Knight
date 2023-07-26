@@ -7,7 +7,8 @@ public class EnemyHealth : MonoBehaviour
     [SerializeField] int maxHp, currentHp;
     [SerializeField] Material flickerMat;
     [SerializeField] float flickerDuration;
-    [SerializeField] UnityEvent thingy;
+    [SerializeField] UnityEvent onDeath;
+    [SerializeField] UnityEvent onSpawn;
     MeshRenderer rend;
     Material originalMaterial;
 
@@ -16,6 +17,7 @@ public class EnemyHealth : MonoBehaviour
         rend = GetComponent<MeshRenderer>();
         originalMaterial = rend.material;
         currentHp = maxHp;
+        onSpawn.Invoke();
     }
 
     void FixedUpdate()
@@ -58,7 +60,7 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
-        thingy.Invoke();
+        onDeath.Invoke();
         Destroy(gameObject);
     }
 
